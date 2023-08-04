@@ -1,0 +1,19 @@
+.ida-ui-container-left{
+    border: 2px  solid steelblue;
+}
+.ida-ui-container-right{
+    border: 2px solid orange;
+    margin-left: 20px;
+}
+.ida-ui-container-left, .ida-ui-container-right{
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-grid;
+    
+}
+.ida-ui-container{
+    text-align: center;
+}
+.ida-container{
+    width: 900px;
+}
