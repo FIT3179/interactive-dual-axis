@@ -5,7 +5,6 @@
   <style>
    .slider {
       height: 20px; /* Set the height to fit the slider properly */
-      transform: rotate(-90deg);
       transform-origin: right; /* Set the transform origin to the right side */
     }
     body{
@@ -16,18 +15,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500&display=swap" rel="stylesheet">
   <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="interactivedualaxis.js"></script>
 </head>
 <body>
-  <input type="range" id="y1-slider" class="slider" min="0" max="100" step="1">
-  <input type="range" id="y2-slider" class="slider" min="0" max="100" step="1">
-  <div id="chart-container"></div>
+  <div class="page">
+    <div id="chart-container1"></div>
+    <div id="chart-container2"></div>
+    <div id="chart-container3"></div>
+    <div id="chart-container4"></div>
+
+  </div>
   <h1>Dual-axis line chart with interactive y-axes</h1>
   <p>Click and drag the sliders to adjust the scale of the axes. The data is synthesized. </p>
-  <small>Made with d3.js. By Kadek Satriadi, with the help of ChatGPT. Version 1.0 (August 2, 2023).</small>
+  <small>Made with d3.js. By Kadek Satriadi. Version 1.0 (August 2, 2023).</small>
+
+
   <script>
-     // Sample data for demonstration purposes
-     const data = [
-     { date: "2023-08-01", value1: 50, value2: 200 },
+       // Sample data for demonstration purposes
+    const data = [
+    { date: "2023-08-01", value1: 50, value2: 200 },
     { date: "2023-08-02", value1: 75, value2: 180 },
     { date: "2023-08-03", value1: 100, value2: 160 },
     { date: "2023-08-04", value1: 120, value2: 170 },
@@ -51,129 +57,7 @@
     // Add more data points here
     ];
 
-
-    // Set up the dimensions of the chart
-    const margin = { top: 30, right: 50, bottom: 30, left: 50 };
-    //Range values
-    const range ={
-        min: 0, 
-        max: 400
-    };
-
-    var rawwidth = 900;
-    const width = rawwidth - margin.left - margin.right;
-    const height = range.max - margin.top - margin.bottom;
-
-    //Change the lenght of the sliders
-    var slider1 = document.getElementById('y1-slider');
-    var slider2 = document.getElementById('y2-slider');
-    slider1.max = range.max * 2;
-    slider2.max = range.max * 2;
-    slider1.value = range.max;
-    slider2.value = range.max;
-    slider1.style.width = height + 'px';
-    slider2.style.width = height + 'px';
-    slider1.style.position = 'absolute';
-    slider2.style.position = 'absolute';
-    slider1.style.left = (-rawwidth * 0.5 + margin.left + margin.right + 20) + 'px';
-    slider1.style.top = (margin.top) + 'px';
-    slider2.style.left = ((rawwidth * 0.5) + margin.right + margin.left) + 'px';
-    slider2.style.top = (margin.top) + 'px';
-
-
-    // Create SVG container
-    const svg = d3.select("#chart-container")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-    // Parse the date and convert strings to dates
-    const parseDate = d3.timeParse("%Y-%m-%d");
-    data.forEach(d => d.date = parseDate(d.date));
-
-    // Define scales for x and y axes
-    const xScale = d3.scaleTime()
-      .domain(d3.extent(data, d => d.date))
-      .range([0, width]);
-
-    const yScale1 = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value1)])
-      .range([height, range.min]);
-
-    const yScale2 = d3.scaleLinear()
-      .domain([0, d3.max(data, d => d.value2)])
-      .range([height, range.min]);
-
-    // Define the line functions for both lines
-    const line1 = d3.line()
-      .x(d => xScale(d.date))
-      .y(d => yScale1(d.value1));
-
-    const line2 = d3.line()
-      .x(d => xScale(d.date))
-      .y(d => yScale2(d.value2));
-
-    // Draw the first line
-    svg.append("path")
-      .datum(data)
-      .attr("class", "line line1") // Add the class for line1
-      .attr("d", line1)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 2);
-
-    // Draw the second line
-    svg.append("path")
-      .datum(data)
-      .attr("class", "line line2") // Add the class for line2
-      .attr("d", line2)
-      .attr("fill", "none")
-      .attr("stroke", "orange")
-      .attr("stroke-width", 2);
-
-    // Create x and y axes
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis1 = d3.axisLeft(yScale1).ticks(5);
-    const yAxis2 = d3.axisRight(yScale2).ticks(5);
-
-    // Append x and y axes to the chart
-    svg.append("g")
-      .attr("class", "x-axis") // Add class for x-axis
-      .attr("transform", `translate(0, ${height})`)
-      .call(xAxis);
-
-    svg.append("g")
-      .attr("class", "y1-axis") // Add class for y1-axis
-      .call(yAxis1);
-
-    svg.append("g")
-      .attr("class", "y2-axis") // Add class for y2-axis
-      .attr("transform", `translate(${width}, 0)`)
-      .call(yAxis2);
-
-    // Interactive sliders
-    d3.select("#y1-slider").on("input", function () {
-        const value =  0.5 * this.max / this.value;
-      const yDomain = [0, d3.max(data, d => d.value1) * value];
-      yScale1.domain(yDomain);
-
-      svg.select(".y1-axis").call(yAxis1);
-      svg.selectAll(".line1")
-        .attr("d", line1);
-    });
-
-    d3.select("#y2-slider").on("input", function () {
-      const value =  0.5 * this.max / this.value;
-      const yDomain = [0, d3.max(data, d => d.value2) * value];
-      yScale2.domain(yDomain);
-
-      svg.select(".y2-axis").call(yAxis2);
-      svg.selectAll(".line2")
-        .attr("d", line2);
-    });
-
+  new InteractiveDualAxis(data, "chart-container1", {min: 0, max: 400}, { top: 30, right: 50, bottom: 30, left: 50 });
   </script>
 </body>
 </html>
