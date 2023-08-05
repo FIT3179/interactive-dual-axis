@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Interactive dual-axis: Are cigarette sales and death rate correlated?</title>
+  <style>
+   .slider {
+      height: 20px; /* Set the height to fit the slider properly */
+      transform-origin: right; /* Set the transform origin to the right side */
+    }
+    body{
+        font-family: 'Roboto', sans-serif;
+    }
+    .info{
+      padding-left: 20px;
+    }
+    .cancer{
+      color: orange;font-weight: bold;
+    }
+    .cigar{
+      color: steelblue;font-weight: bold;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400;500&display=swap" rel="stylesheet">
+  <link href="/../interactivedualaxis.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="/../interactivedualaxis.js"></script>
+  
+</head>
+<body>
+  <div class="page">
+    <div class="info">
+      <h1>Are <span class="cigar">cigarette sales</span> and <span class="cancer">death rate</span> correlated?</h1>
+      <p>In this activity, you will play with dual-axis line charts to see how the type of mapping, scale, and offset of the axes can affect your perception of the data.</p>
+      <p>The <span class="cigar">blue line —</span> is average cigarette sales per adult per day.</p>
+      <p>The <span class="cancer">orange line —</span> is average cancer death rate per 100k male.</p>
+
+      <small>Made with d3.js. By Kadek Satriadi for FIT3179 Workshop Activity. Version 1.2 (August 5, 2023).</small>
+    </div>
+  
+    <div class="pure-g">
+      <div class="pure-u-1-2"><div id="chart-container1"></div></div>
+      <div class="pure-u-1-2"><div id="chart-container2"></div></div>
+    </div>
+    <div class="pure-g">
+      <div class="pure-u-1-2"><div id="chart-container3"></div></div>
+      <div class="pure-u-1-2"><div id="chart-container4"></div></div>
+    </div>
+  </div>
+
+
+  <script>
+    var scaleRange = {min: 0, max: 200};
+    var offsetRange = {min: -50, max: 50};
+    var margin = { top: 60, right: 50, bottom: 30, left: 50 };
+    var x = 'Year';
+    var y1 = 'Sales';
+    var y2 = 'DeathRateMale';
+    var w = 800;
+    var h = 400;
+    d3.csv("cancercigarettessales.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container1",scaleRange, offsetRange, margin, w, h);
+    });
+    d3.csv("cancercigarettessales.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container2",scaleRange, offsetRange, margin, w, h);
+    });
+    d3.csv("cancercigarettessales.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container3",scaleRange, offsetRange, margin, w, h);
+    });
+    d3.csv("cancercigarettessales.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container4",scaleRange, offsetRange, margin, w, h);
+    });
+  </script>
+</body>
+</html>

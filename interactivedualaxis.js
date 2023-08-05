@@ -1,7 +1,11 @@
 class InteractiveDualAxis {
-    constructor(data, id, range, margin){
+    constructor(data, x, y1, y2, dateformat, id, rangeScale, rangeOffset, margin, w, h){
       this.data = data;
       this.id = id;
+      this.x = x;
+      this.y1 = y1;
+      this.y2 = y2;
+      this.dateformat = dateformat;
       this.container = document.getElementById(this.id);
       this.svgcontainter = document.createElement('div');
       this.uicontainer = document.createElement('div');
@@ -33,8 +37,10 @@ class InteractiveDualAxis {
       this.line2;
       this.svgYAxis1;
       this.svgYAxis2;
-      this.rawwidth = 900;
-      this.range = range;
+      this.rawwidth = w;
+      this.rawheight = h;
+      this.rangeScale = rangeScale;
+      this.rangeOffset = rangeOffset;
       this.path1;
       this.path2;
       this.margin = margin;
@@ -45,7 +51,7 @@ class InteractiveDualAxis {
  // Set up the dimensions of the chart
         //Range values
         this.width = this.rawwidth - this.margin.left - this.margin.right;
-        this.height = this.range.max - this.margin.top - this.margin.bottom;
+        this.height = this.rawheight - this.margin.top - this.margin.bottom;
 
         //Change the lenght of the sliders
         this.container.classList.add('ida-container');
@@ -63,22 +69,33 @@ class InteractiveDualAxis {
 
         this.slider1.type = "range";
         this.slider2.type = "range";
+
         this.slider1.classList.add('slider');
         this.slider2.classList.add('slider');
 
         this.offsetinput1.type = "range";
         this.offsetinput2.type = "range";
 
-        this.offsetinput1.max = this.range.max * 2;
-        this.offsetinput2.max = this.range.max * 2;
-        this.offsetinput1.value = this.range.min;
-        this.offsetinput2.value = this.range.min;
+        this.offsetinput1.max = this.rangeOffset.max;
+        this.offsetinput2.max = this.rangeOffset.max;
+
+        this.offsetinput1.min = this.rangeOffset.min;
+        this.offsetinput2.min = this.rangeOffset.min;
+
+        this.offsetinput1.value = (this.rangeOffset.max + this.rangeOffset.min) * 0.5;
+        this.offsetinput2.value = (this.rangeOffset.max + this.rangeOffset.min) * 0.5;
 
 
-        this.slider1.max = this.range.max * 2;
-        this.slider2.max = this.range.max * 2;
-        this.slider1.value = this.range.max;
-        this.slider2.value = this.range.max;
+        this.slider1.min = this.rangeScale.min;
+        this.slider2.min = this.rangeScale.min;
+
+        this.slider1.max = this.rangeScale.max * 2;
+        this.slider2.max = this.rangeScale.max * 2;
+        
+        this.slider1.value = this.rangeScale.max;
+        this.slider2.value = this.rangeScale.max;
+        
+
         this.slider1.style.width = this.height + 'px';
         this.slider2.style.width = this.height + 'px';
         this.offsetinput1.style.width = this.height + 'px';
@@ -138,59 +155,73 @@ class InteractiveDualAxis {
 
        this.offsetinput1.oninput = function(){
              t.offsetLabel1.innerHTML = this.value;
-            t.updateAxis(t.offsetinput1, t.slider1, t.scaleMenu1,  t.yScale1, t.yAxis1, t.svgYAxis1, t.path1, true);
+             if(this.value <= 0 && t.scaleMenu1.value == "log"){
+                this.value = 1;
+            }else{
+                t.updateAxis(t.offsetinput1, t.slider1, t.scaleMenu1,  t.yScale1, t.yAxis1, t.svgYAxis1, t.path1, true);
+            }
        }
        this.slider1.oninput = function(){
             t.scaleLabel1.innerHTML = this.value;
             t.updateAxis(t.offsetinput1, t.slider1, t.scaleMenu1,  t.yScale1, t.yAxis1, t.svgYAxis1, t.path1, true);
        }
        this.scaleMenu1.oninput = function(){
+            if(this.value == 'log' && t.offsetinput1.value <= 0){
+                t.offsetinput1.value = 1;
+            }
             t.updateAxis(t.offsetinput1, t.slider1, t.scaleMenu1,  t.yScale1, t.yAxis1, t.svgYAxis1, t.path1, true);
        }
 
        this.offsetinput2.oninput = function(){
             t.offsetLabel2.innerHTML = this.value;
-            t.updateAxis(t.offsetinput2, t.slider2, t.scaleMenu2,  t.yScale2, t.yAxis2, t.svgYAxis2, t.path2, false);
+            if(this.value <= 0 && t.scaleMenu2.value == "log"){
+                this.value = 1;
+            }else{
+                t.updateAxis(t.offsetinput2, t.slider2, t.scaleMenu2,  t.yScale2, t.yAxis2, t.svgYAxis2, t.path2, false);
+            }
        }
        this.slider2.oninput = function(){
             t.scaleLabel2.innerHTML = this.value;
             t.updateAxis(t.offsetinput2, t.slider2, t.scaleMenu2,  t.yScale2, t.yAxis2, t.svgYAxis2, t.path2, false);
         }
         this.scaleMenu2.oninput = function(){
+            if(this.value == 'log' && t.offsetinput2.value <= 0){
+                t.offsetinput2.value = 1;
+            }
             t.updateAxis(t.offsetinput2, t.slider2, t.scaleMenu2,  t.yScale2, t.yAxis2, t.svgYAxis2, t.path2, false);
         }
     }
 
     drawChart = function(){
         // Parse the date and convert strings to dates
-        const parseDate = d3.timeParse("%Y-%m-%d");
-        data.forEach(d => d.date = parseDate(d.date));
+        const parseDate = d3.timeParse(this.dateformat);
+        this.data.forEach(d => d[this.x] = parseDate(d[this.x]));
 
         // Define scales for x and y axes
         this.xScale = d3.scaleTime()
-            .domain(d3.extent(data, d => d.date))
+            .domain(d3.extent(this.data, d => d[this.x]))
             .range([0, this.width]);
 
         this.yScale1 = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.value1)])
-            .range([this.height, this.range.min]);
+            .domain([0, d3.max(this.data, d => d[this.y1])])
+            .range([this.height, this.rangeScale.min]);
 
         this.yScale2 = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.value2)])
-            .range([this.height, this.range.min]);
+            .domain([0, d3.max(this.data, d => d[this.y2])])
+            .range([this.height, this.rangeScale.min]);
 
         // Define the line functions for both lines
         this.line1 = d3.line()
-            .x(d => this.xScale(d.date))
-            .y(d => this.yScale1(d.value1));
+            .x(d => this.xScale(d[this.x]))
+            .y(d => this.yScale1(d[this.y1]));
 
         this.line2 = d3.line()
-            .x(d => this.xScale(d.date))
-            .y(d => this.yScale2(d.value2));
+            .x(d => this.xScale(d[this.x]))
+            .y(d => this.yScale2(d[this.y2]));
 
         // Draw the first line
         this.path1 = this.svg.append("path")
-            .datum(data)
+            .datum(this.data)
             .attr("class", "line line1") // Add the class for line1
             .attr("d", this.line1)
             .attr("fill", "none")
@@ -199,7 +230,7 @@ class InteractiveDualAxis {
 
         // Draw the second line
         this.path2 = this.svg.append("path")
-            .datum(data)
+            .datum(this.data)
             .attr("class", "line line2") // Add the class for line2
             .attr("d", this.line2)
             .attr("fill", "none")
@@ -213,16 +244,13 @@ class InteractiveDualAxis {
 
         // Append x and y axes to the chart
         this.svg.append("g")
-            .attr("class", "x-axis") // Add class for x-axis
             .attr("transform", `translate(0, ${this.height})`)
             .call(this.xAxis);
 
         this.svgYAxis1 = this.svg.append("g")
-            .attr("class", "y1-axis") // Add class for y1-axis
             .call(this.yAxis1);
 
         this.svgYAxis2 = this.svg.append("g")
-            .attr("class", "y2-axis") // Add class for y2-axis
             .attr("transform", `translate(${this.width}, 0)`)
             .call(this.yAxis2);   
     }
@@ -233,25 +261,26 @@ class InteractiveDualAxis {
         switch(scaleMenu.value){
             case 'linear':
                 yScale = d3.scaleLinear()
-                .domain([-offset + 0, (left)? d3.max(data, d => d.value1) * value : d3.max(data, d => d.value2) * value])
-                .range([t.height, t.range.min]);
+                .domain([offset, (left)? d3.max(this.data, d => d[this.y1]) * value : d3.max(this.data, d => d[this.y2]) * value])
+                .range([t.height, t.rangeScale.min]);
                
             break;
             case 'log':
-                var val = -offset;
-                val = (val <= 0)?  Math.abs(val) + 1: val;
-                console.log(val);
+                var val = offset;
                 yScale = d3.scaleLog()
-                .domain([val, (left)? d3.max(data, d => d.value1) * value : d3.max(data, d => d.value2) * value])
-                .range([t.height, t.range.min]);
+                .base(2)
+                .domain([val, (left)? d3.max(this.data, d => d[this.y1]) * value : d3.max(this.data, d => d[this.y2]) * value])
+                .range([t.height, t.rangeScale.min]);
             break;
         }
 
         const line1 = d3.line()
-        .x(d => t.xScale(d.date))
-        .y(d => yScale((left)? d.value1 : d.value2));
+        .x(d => t.xScale(d[this.x]))
+        .y(d => yScale((left)? d[this.y1] : d[this.y2]));
+
 
         yAxis = (left)? d3.axisLeft(yScale) : d3.axisRight(yScale);
+        yAxis = yAxis.tickFormat(d3.format("s"));
 
         svgYAxis.call(yAxis);
         path.attr("d", line1);
