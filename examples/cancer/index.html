@@ -3,6 +3,10 @@
 <head>
   <title>Interactive dual-axis: Are cigarette sales and death rate correlated?</title>
   <style>
+    .page{
+      max-width: 1650px;
+      margin: auto;
+    }
    .slider {
       height: 20px; /* Set the height to fit the slider properly */
       transform-origin: right; /* Set the transform origin to the right side */
@@ -19,6 +23,13 @@
     .cigar{
       color: steelblue;font-weight: bold;
     }
+    h4{
+      text-align: center;
+      max-width: 800px;
+    }
+    .pure-g{
+      margin-bottom: 50px;
+    }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,45 +43,53 @@
 <body>
   <div class="page">
     <div class="info">
-      <h1>Are <span class="cigar">cigarette sales</span> and <span class="cancer">death rate</span> correlated?</h1>
-      <p>In this activity, you will play with dual-axis line charts to see how the type of mapping, scale, and offset of the axes can affect your perception of the data.</p>
-      <p>The <span class="cigar">blue line —</span> is average cigarette sales per adult per day.</p>
-      <p>The <span class="cancer">orange line —</span> is average cancer death rate per 100k male.</p>
-
-      <small>Made with d3.js. By Kadek Satriadi for FIT3179 Workshop Activity. Version 1.2 (August 5, 2023).</small>
+      <h1>Are <span class="cigar">cigarette sales</span> and <span class="cancer">lung cancer</span> correlated?</h1>
+      <p> Adjust the dual-axis charts to communicate different messages.</p>
+      <p>The <span class="cigar">blue line</span> shows average cigarette sales per adult per day in the USA.</p>
+      <p>The <span class="cancer">orange line</span> shows lung cancer deaths per 100,0000 men in the USA.</p>
+      <p style="color: gray; font-size: small;font-size: small;border-left: 1px solid gray;padding-left: 10px;">This visualisation is inspired by Max Roser, 14 July 2021. <br/><a href="https://ourworldindata.org/smoking-big-problem-in-brief" target="_blank">How large of a global problem is it? And how can we make progress against it?</a>  <br/><i>Note: Roser’s chart shows age-standardized lung cancer rates. This visualisation shows crude cancer rates.</i> </p>
     </div>
   
     <div class="pure-g">
-      <div class="pure-u-1-2"><div id="chart-container1"></div></div>
-      <div class="pure-u-1-2"><div id="chart-container2"></div></div>
+      <div class="pure-u-1-2"><h4>Lung cancer rates are hight, but not correlated to cigarette consumption</h4><div id="chart-container1"></div></div>
+      <div class="pure-u-1-2"><h4>Lung cancer rates have changed marginally, despite huge changes in cigarette consumption</h4><div id="chart-container2"></div></div>
     </div>
     <div class="pure-g">
-      <div class="pure-u-1-2"><div id="chart-container3"></div></div>
-      <div class="pure-u-1-2"><div id="chart-container4"></div></div>
+      <div class="pure-u-1-2"><h4>Decrease in tobacco consumption reduces lung cancer 25 years later</h4><div id="chart-container3"></div></div>
+      <div class="pure-u-1-2"><h4>Decrease in tobacco consumption has a rapid effect on lung cancer rate</h4><div id="chart-container4"></div></div>
+    </div>
+
+
+      <div style="padding-top: 50px; padding-bottom: 20px; color: gray; vertical-align: bottom; text-align: center; font-size: small;">  
+        Made with d3.js. By Kadek Satriadi for FIT3179 Workshop Activity. Version 1.2 (August 5, 2023).
+      </div>
     </div>
   </div>
 
 
   <script>
-    var scaleRange = {min: 0, max: 200};
-    var offsetRange = {min: -50, max: 50};
+    var scaleRange1 = {min: 0, max: 200};
+    var scaleRange2 = {min: 0, max: 200};
+
+    var offsetRange1 = {min: -200, max: 5};
+    var offsetRange2 = {min: -1000, max: 60};
     var margin = { top: 60, right: 50, bottom: 30, left: 50 };
     var x = 'Year';
-    var y1 = 'Sales';
-    var y2 = 'DeathRateMale';
+    var y1 = 'CigarettesAdultDay';
+    var y2 = 'DateRate';
     var w = 800;
     var h = 400;
-    d3.csv("cancercigarettessales.csv").then(function(data) {
-      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container1",scaleRange, offsetRange, margin, w, h);
+    d3.csv("cigarsalesandlungcancer.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container1",scaleRange1,scaleRange2, offsetRange1,offsetRange2, margin, w, h);
     });
-    d3.csv("cancercigarettessales.csv").then(function(data) {
-      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container2",scaleRange, offsetRange, margin, w, h);
+    d3.csv("cigarsalesandlungcancer.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container2",scaleRange1,scaleRange2, offsetRange1,offsetRange2, margin, w, h);
     });
-    d3.csv("cancercigarettessales.csv").then(function(data) {
-      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container3",scaleRange, offsetRange, margin, w, h);
+    d3.csv("cigarsalesandlungcancer.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container3",scaleRange1,scaleRange2, offsetRange1,offsetRange2, margin, w, h);
     });
-    d3.csv("cancercigarettessales.csv").then(function(data) {
-      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container4",scaleRange, offsetRange, margin, w, h);
+    d3.csv("cigarsalesandlungcancer.csv").then(function(data) {
+      new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container4",scaleRange1,scaleRange2, offsetRange1,offsetRange2, margin, w, h);
     });
   </script>
 </body>
