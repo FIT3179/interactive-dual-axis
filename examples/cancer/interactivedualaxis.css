@@ -18,6 +18,10 @@
     
 }
 .ida-svg-container{
-    width: 600px; /* Set the container width to 100% */
-    height: auto; /* This will maintain the aspect ratio */
+    width: 100%; 
+    height: auto; 
+}
+
+.ida-container{
+    width: 600px; 
 }
