@@ -112,8 +112,8 @@ class InteractiveDualAxis {
         var label1 = document.createElement('div');
         var label2 = document.createElement('div');
 
-        label1.innerHTML = '<span class="cigar">Cigarettes sold per adult per day</span>';
-        label2.innerHTML = '<span class="cancer">Lung cancer deaths per 100,000 men </span>';
+        label1.innerHTML = '<span class="cigar menu-title">Cigarettes sold per adult per day</span>';
+        label2.innerHTML = '<span class="cancer menu-title">Lung cancer deaths per 100,000 men </span>';
 
         var lbase1 = document.createElement('small');
         lbase1.innerHTML = "Base:";
