@@ -77,7 +77,7 @@
     var x = 'Year';
     var y1 = 'CigarettesAdultDay';
     var y2 = 'DateRate';
-    var w = 800;
+    var w = 600;
     var h = 400;
     d3.csv("cigarsalesandlungcancer.csv").then(function(data) {
       new InteractiveDualAxis(data, x, y1, y2,'%Y', "chart-container1",scaleRange1,scaleRange2, offsetRange1,offsetRange2, margin, w, h);
