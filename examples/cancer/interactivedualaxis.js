@@ -117,19 +117,23 @@ class InteractiveDualAxis {
 
         var lbase1 = document.createElement('small');
         lbase1.innerHTML = "Base:";
+        lbase1.classList.add('slider-label');
         lbase1.style.textAlign = "left";
 
         var lscale1 = document.createElement('small');
         lscale1.innerHTML = "Scale:";
+        lscale1.classList.add('slider-label');
         lscale1.style.textAlign = "left";
 
 
         var lbase2 = document.createElement('small');
         lbase2.innerHTML = "Base:";
+        lbase2.classList.add('slider-label');
         lbase2.style.textAlign = "left";
 
         var lscale2 = document.createElement('small');
         lscale2.innerHTML = "Scale:";
+        lscale2.classList.add('slider-label');
         lscale2.style.textAlign = "left";
 
         this.uicontainerleft.append(label1);
