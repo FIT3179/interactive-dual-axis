@@ -19,7 +19,6 @@
 }
 .ida-svg-container{
     width: 600px; /* Set the container width to 100% */
-    max-width: 500px; /* Optionally, set a maximum width for the SVG */
     height: auto; /* This will maintain the aspect ratio */
 }
 @media (max-width: 600px) {
