@@ -21,14 +21,3 @@
     width: 600px; /* Set the container width to 100% */
     height: auto; /* This will maintain the aspect ratio */
 }
-@media (max-width: 600px) {
-    .ida-svg-container {
-      width: 100%;
-    }
-  }
-.ida-ui-container{
-    text-align: center;
-}
-.ida-container{
-    width: 100%;
-}
